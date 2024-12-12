@@ -133,8 +133,6 @@ func worker(task_queue <-chan socialNetwork.Task, inverted_index map[string][]ui
 // 	fmt.Printf("Max queue length %.2f %%\n", producer.GetMaxQueueLength())
 // }
 
-
-
 //testiranje za razlicne delaye
 
 func supervisor(producer *socialNetwork.Q, inverted_index map[string][]uint64, stop_supervisor chan bool) {
@@ -185,26 +183,26 @@ func supervisor(producer *socialNetwork.Q, inverted_index map[string][]uint64, s
 
 func main() {
 
-	for delay:=1000; delay<10001; delay+=1000{
+	for delay := 1000; delay < 10001; delay += 1000 {
 
 		var inverted_index = make(map[string][]uint64)
 		var producer socialNetwork.Q
 		stop_supervisor := make(chan bool)
-	
+
 		producer.New(delay)
 		go producer.Run()
-	
+
 		start := time.Now()
 		go supervisor(&producer, inverted_index, stop_supervisor)
 		time.Sleep(time.Second * 5)
-	
+
 		producer.Stop()
 		stop_supervisor <- true
 		close(stop_supervisor)
-	
+
 		for !producer.QueueEmpty() {
 		}
-	
+
 		elapsed := time.Since(start)
 
 		fmt.Printf("Delay: %d\n", delay)
@@ -214,11 +212,10 @@ func main() {
 		fmt.Printf("Average queue length: %.2f %%\n", producer.GetAverageQueueLength())
 		// Izpišemo največjo dolžino vrste v čakalnici
 		fmt.Printf("Max queue length %.2f %%\n", producer.GetMaxQueueLength())
-		fmt.Println();
+		fmt.Println()
 	}
 
 }
-
 
 //stara koda brez timeouta:
 
