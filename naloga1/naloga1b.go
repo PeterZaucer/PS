@@ -41,7 +41,6 @@ func stetje(goI int, goNum int, wordFreq *map[string]int) {
 			if c.Id == 0 && c.Title == "" {
 				break
 			}
-
 		}
 		texts := []string{c.Title}
 

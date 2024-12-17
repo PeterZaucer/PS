@@ -24,15 +24,25 @@ func ocisti(text string) string {
 		}
 	}
 	return builder.String()
+
 }
 
-func stetje(iterations int, comics []xkcd.Comic, wordFreq *map[string]int) {
+func stetje(goI int, goNum int, wordFreq *map[string]int) {
 	defer wg.Done()
 
 	wordFreqTemp := make(map[string]int)
 
-	for i := 0; i<iterations; i++ {
-		c := comics[i]
+	for i := goI; true; i+=goNum {
+		c, _ := xkcd.FetchComic(i)
+
+		if c.Id == 0 && c.Title == "" {
+			i+=goNum
+			c, _ := xkcd.FetchComic(i)
+			if c.Id == 0 && c.Title == "" {
+				break
+			}
+
+		}
 		texts := []string{c.Title}
 
 		if c.Transcript != "" {
@@ -65,42 +75,16 @@ func main() {
 	gPtr := flag.Int("g", 2, "# of goroutines")
 	flag.Parse()
 
-	var comics []xkcd.Comic
-	id := 1
-	for{
-		comic, _ := xkcd.FetchComic(id)
-		if comic.Id == 0 && comic.Title == "" {
-			id++
-			comic, _ :=xkcd.FetchComic(id)
-			if comic.Id == 0 && comic.Title == "" {
-				break
-			}
-		}
-		comics = append(comics, comic)
-		id++
-		if(id%100 == 0){
-			println(id)
-		}
-	}
-	println(len(comics))
-
-	var noComics = len(comics)
 	wordFreq := make(map[string]int)
-	noComicPer := noComics/ *gPtr
 
 	wg.Add(*gPtr)
+	xkcd.FetchComic()
+
 	for i := 0; i < *gPtr; i++ {
-		
-		start := i * noComicPer
-		end := start + noComicPer
-		if i == *gPtr-1 {
-			end = noComics
-		}
-		go stetje(end-start, comics[start:end], &wordFreq)
+		go stetje(i, *gPtr, &wordFreq)
 	}
 
 	wg.Wait()
-
 
 	type wordFreqSort struct {
 		Word  string
