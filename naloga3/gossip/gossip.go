@@ -41,7 +41,7 @@ func Start(id, N, M, K, basePort int) {
 	}
 }
 
-func listenMaster(conn *net.UDPConn,  id int, logger *govec.GoLog, opts govec.GoLogOptions, M int) {
+func listenMaster(conn *net.UDPConn,  id int, logger *govc.GoLog, opts govec.GoLogOptions, M int) {
 	buffer := make([]byte, 1024)
 	received := map[int]bool{}
 
